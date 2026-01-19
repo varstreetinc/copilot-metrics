@@ -88,6 +88,60 @@ function parseMaybeNdjson(text) {
 export default function App() {
   const [raw, setRaw] = useState([])
   const [selectedUsers, setSelectedUsers] = useState([])
+  const [token, setToken] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [downloadLink, setDownloadLink] = useState('')
+  const [reportInfo, setReportInfo] = useState(null)
+
+  async function fetchFromAPI() {
+    if (!token.trim()) {
+      setError('Please enter a GitHub token')
+      return
+    }
+    setLoading(true)
+    setError('')
+    setDownloadLink('')
+    setReportInfo(null)
+    try {
+      // Get the download links from GitHub API
+      const response = await fetch(
+        'https://api.github.com/orgs/varstreetinc/copilot/metrics/reports/users-28-day/latest',
+        {
+          headers: {
+            'Accept': 'application/vnd.github+json',
+            'Authorization': `Bearer ${token.trim()}`,
+            'X-GitHub-Api-Version': '2022-11-28'
+          }
+        }
+      )
+      
+      if (!response.ok) {
+        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`)
+      }
+      
+      const result = await response.json()
+      console.log('API Response:', result)
+      
+      if (!result.download_links || result.download_links.length === 0) {
+        throw new Error('No download links found in API response')
+      }
+      
+      // Due to CORS restrictions, we can't fetch the report directly from the browser
+      // Show the download link to the user instead
+      setDownloadLink(result.download_links[0])
+      setReportInfo({
+        startDate: result.report_start_day,
+        endDate: result.report_end_day
+      })
+      setError('')
+    } catch (err) {
+      console.error('API fetch error:', err)
+      setError(err.message || 'Failed to fetch data from API')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   function handleFile(e) {
     const f = e.target.files && e.target.files[0]
@@ -136,6 +190,43 @@ export default function App() {
       </header>
 
       <div className="controls">
+        <div className="api-fetch">
+          <label>🔑 Fetch from GitHub API:</label>
+          <div className="api-input-row">
+            <input
+              type="password"
+              placeholder="Paste your GitHub token here..."
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              className="token-input"
+            />
+            <button 
+              onClick={fetchFromAPI} 
+              disabled={loading}
+              className="btn-fetch"
+            >
+              {loading ? '⏳ Loading...' : '🚀 Get Report Link'}
+            </button>
+          </div>
+          {error && <div className="error-message">❌ {error}</div>}
+          {downloadLink && (
+            <div className="download-section">
+              <div className="download-info">
+                ✅ Report found! Period: <strong>{reportInfo?.startDate}</strong> to <strong>{reportInfo?.endDate}</strong>
+              </div>
+              <div className="download-steps">
+                <p>1. Click the button below to download the report:</p>
+                <a href={downloadLink} download="copilot_report.json" className="btn-download" target="_blank" rel="noopener noreferrer">
+                  📥 Download Report
+                </a>
+                <p>2. Then load the downloaded file below:</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="divider">— {downloadLink ? 'STEP 2: Load the downloaded file' : 'OR'} —</div>
+
         <div className="file-upload">
           <label>📁 Load Data File:</label>
           <input type="file" accept=".json" onChange={handleFile} />

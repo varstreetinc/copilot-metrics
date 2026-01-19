@@ -70,6 +70,131 @@ body {
   cursor: pointer;
 }
 
+/* API Fetch Section */
+.api-fetch {
+  margin-bottom: 16px;
+}
+
+.api-fetch label {
+  font-weight: 600;
+  color: #111827;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.api-input-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.token-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.token-input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+}
+
+.btn-fetch {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--accent), #059669);
+  color: white;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.2);
+  white-space: nowrap;
+}
+
+.btn-fetch:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+}
+
+.btn-fetch:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error-message {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+
+.download-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 10px;
+}
+
+.download-info {
+  color: #065f46;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.download-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.download-steps p {
+  color: #374151;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  color: white;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.25);
+  width: fit-content;
+}
+
+.btn-download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+  color: white;
+}
+
+.divider {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 16px 0;
+  position: relative;
+}
+
 .user-filter label {
   font-weight: 600;
   color: #333;

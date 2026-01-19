@@ -8,7 +8,28 @@ Quick start:
 npm install
 ```
 
-2. Fetch the latest Copilot metrics report using the GitHub API:
+2. Run the dev server:
+
+```bash
+npm run dev
+```
+
+3. Open http://localhost:5173
+
+## Loading Data
+
+### Option A: Fetch via UI (Recommended)
+
+The dashboard has a built-in feature to fetch reports directly from the GitHub API:
+
+1. Enter your GitHub Personal Access Token in the token field
+2. Click **"Get Report Link"** to fetch the download URL from GitHub
+3. Click **"Download Report"** to download the JSON file
+4. Use the file picker to load the downloaded file into the dashboard
+
+### Option B: Manual API Call
+
+You can also fetch the report manually using curl:
 
 ```bash
 curl -L \
@@ -18,18 +39,10 @@ curl -L \
   https://api.github.com/orgs/varstreetinc/copilot/metrics/reports/users-28-day/latest
 ```
 
-3. Place your latest `copilot_report-YYYY-MM-DD.json` file in `public/` folder. The app currently expects `copilot_report-2026-01-13.json` by default. Rename your file to match or edit `src/App.jsx` to load a different filename.
+This returns a JSON with `download_links` - use that URL to download the actual report, then load it via the file picker in the UI.
 
-3. Run the dev server:
+## Files
 
-```bash
-npm run dev
-```
-
-Open http://localhost:5173
-
-Files:
 - `src/` - React app
-- `public/` - Put JSON files here for the dev server to serve
-
-You can extend the app by adding more charts in `src/charts`.
+- `src/charts/` - Chart components (extend by adding more here)
+- `public/` - Static assets
