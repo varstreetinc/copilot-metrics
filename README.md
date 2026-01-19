@@ -2,14 +2,23 @@ Copilot Dashboard (Vite + React)
 
 Quick start:
 
-1. From the `dashboard` folder install dependencies:
+1. Install dependencies:
 
 ```bash
-cd dashboard
 npm install
 ```
 
-2. Place your latest `copilot_report-YYYY-MM-DD.json` file in `dashboard/public/` (create `public` folder). The app currently expects `copilot_report-2026-01-13.json` by default. Rename your file to match or edit `src/App.jsx` to load a different filename.
+2. Fetch the latest Copilot metrics report using the GitHub API:
+
+```bash
+curl -L \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer <REPLACE_WITH_TOKEN>" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/orgs/varstreetinc/copilot/metrics/reports/users-28-day/latest
+```
+
+3. Place your latest `copilot_report-YYYY-MM-DD.json` file in `public/` folder. The app currently expects `copilot_report-2026-01-13.json` by default. Rename your file to match or edit `src/App.jsx` to load a different filename.
 
 3. Run the dev server:
 
