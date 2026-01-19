@@ -1,0 +1,11 @@
+[
+  {
+    "date": "2026-01-13",
+    "total_active_users": 10,
+    "total_engaged_users": 6,
+    "copilot_ide_code_completions": { "total_engaged_users": 6 },
+    "copilot_ide_chat": { "total_engaged_users": 2 },
+    "copilot_dotcom_chat": { "total_engaged_users": 1 },
+    "copilot_dotcom_pull_requests": { "total_engaged_users": 1 }
+  }
+]
