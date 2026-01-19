@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import './styles.css'
+import { mergeDatasets, getMergeStats } from './utils/dataMerger'
 
 import DailyActivityChart from './charts/DailyActivityChart'
 import UserActivityHeatmap from './charts/UserActivityHeatmap'
@@ -93,6 +94,8 @@ export default function App() {
   const [error, setError] = useState('')
   const [downloadLink, setDownloadLink] = useState('')
   const [reportInfo, setReportInfo] = useState(null)
+  const [loadedFiles, setLoadedFiles] = useState([])
+  const [mergeStats, setMergeStats] = useState(null)
 
   async function fetchFromAPI() {
     if (!token.trim()) {
@@ -143,26 +146,63 @@ export default function App() {
     }
   }
 
-  function handleFile(e) {
-    const f = e.target.files && e.target.files[0]
-    if (!f) return
-    console.log('Loading file:', f.name, 'size:', f.size)
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      const txt = ev.target.result
-      console.log('File loaded, text length:', txt.length)
-      const parsed = parseMaybeNdjson(txt)
-      console.log('Parsed data:', parsed.length, 'records')
-      if (parsed.length > 0) {
-        console.log('Sample record:', parsed[0])
+  function handleFiles(e) {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+    
+    const fileArray = Array.from(files)
+    console.log('Loading', fileArray.length, 'file(s)')
+    
+    const datasets = []
+    const fileNames = []
+    let filesProcessed = 0
+    
+    fileArray.forEach((file) => {
+      console.log('Loading file:', file.name, 'size:', file.size)
+      const reader = new FileReader()
+      
+      reader.onload = (ev) => {
+        const txt = ev.target.result
+        console.log('File loaded:', file.name, 'text length:', txt.length)
+        const parsed = parseMaybeNdjson(txt)
+        console.log('Parsed data from', file.name + ':', parsed.length, 'records')
+        
+        if (parsed.length > 0) {
+          datasets.push(parsed)
+          fileNames.push(file.name)
+        }
+        
+        filesProcessed++
+        
+        // When all files are processed, merge the data
+        if (filesProcessed === fileArray.length) {
+          const merged = mergeDatasets(datasets)
+          const stats = getMergeStats(merged)
+          
+          console.log('Merged data:', merged.length, 'records from', fileNames.length, 'files')
+          console.log('Merge stats:', stats)
+          
+          setRaw(merged)
+          setLoadedFiles(fileNames)
+          setMergeStats(stats)
+          setSelectedUsers([])
+        }
       }
-      setRaw(parsed)
-      setSelectedUsers([])
-    }
-    reader.onerror = (err) => {
-      console.error('File read error:', err)
-    }
-    reader.readAsText(f)
+      
+      reader.onerror = (err) => {
+        console.error('File read error:', file.name, err)
+        filesProcessed++
+      }
+      
+      reader.readAsText(file)
+    })
+  }
+
+  function clearData() {
+    setRaw([])
+    setLoadedFiles([])
+    setMergeStats(null)
+    setSelectedUsers([])
   }
 
   const allUsers = [...new Set(raw.map(r => r.user_login).filter(Boolean))].sort()
@@ -228,8 +268,30 @@ export default function App() {
         <div className="divider">— {downloadLink ? 'STEP 2: Load the downloaded file' : 'OR'} —</div>
 
         <div className="file-upload">
-          <label>📁 Load Data File:</label>
-          <input type="file" accept=".json" onChange={handleFile} />
+          <label>📁 Load Data Files:</label>
+          <div className="file-upload-row">
+            <input type="file" accept=".json" multiple onChange={handleFiles} />
+            {loadedFiles.length > 0 && (
+              <button onClick={clearData} className="btn-clear">🗑️ Clear</button>
+            )}
+          </div>
+          {loadedFiles.length > 0 && (
+            <div className="loaded-files-info">
+              <div className="files-list">
+                📄 Loaded: {loadedFiles.join(', ')}
+              </div>
+              {mergeStats && (
+                <div className="merge-stats">
+                  📊 <strong>{mergeStats.totalRecords}</strong> records | 
+                  📅 <strong>{mergeStats.uniqueDates}</strong> unique dates | 
+                  👥 <strong>{mergeStats.uniqueUsers}</strong> users
+                  {mergeStats.dateRange && (
+                    <span> | 🗓️ {mergeStats.dateRange.startDate} to {mergeStats.dateRange.endDate}</span>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {allUsers.length > 0 && (

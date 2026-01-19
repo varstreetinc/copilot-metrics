@@ -53,14 +53,20 @@ body {
 
 .file-upload {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 12px;
   margin-bottom: 16px;
 }
 
-.file-upload label {
+.file-upload > label {
   font-weight: 600;
   color: #111827;
+}
+
+.file-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .file-upload input[type="file"] {
@@ -68,6 +74,40 @@ body {
   border: 2px dashed #ddd;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.btn-clear {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.15s ease;
+}
+
+.btn-clear:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.loaded-files-info {
+  padding: 12px 16px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+}
+
+.files-list {
+  color: #0369a1;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.merge-stats {
+  color: #475569;
+  font-size: 0.85rem;
 }
 
 /* API Fetch Section */
